@@ -1,7 +1,6 @@
 describe("QA Job Tasks", () => {
 
   beforeEach(() => {
-    // Perform an action that triggers the GET request
    
     cy.visit("https://demoqa.com/");
   })
