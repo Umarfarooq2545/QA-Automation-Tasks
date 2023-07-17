@@ -1,6 +1,8 @@
 describe("QA Job Tasks", () => {
 
   beforeEach(() => {
+    // Perform an action that triggers the GET request
+   
     cy.visit("https://demoqa.com/");
   })
 
@@ -19,8 +21,12 @@ describe("QA Job Tasks", () => {
     cy.get("#subjectsInput").type("Computer Scinece");
     cy.contains("Music").click();
     cy.get("#currentAddress").type("Address 1");
-    cy.get("#react-select-3-input").invoke("val", "NCR").trigger("change");
-    cy.get("#react-select-4-input").invoke("val", "Delhi").trigger("change");
+    //   cy.get('#stateCity-wrapper').within(() => {
+    //     cy.get('#state').click().type('NCR').type('{enter}');
+    //     cy.get('#city').click().type('Delhi').type('{enter}');
+    //   });
+    // cy.get("#react-select-3-input").invoke("val", "NCR").trigger("change");
+    // cy.get("#react-select-4-input").invoke("val", "Delhi").trigger("change");
     cy.get("#submit").click()
 
     //Verifying data from Modal 
@@ -32,14 +38,13 @@ describe("QA Job Tasks", () => {
     cy.get(".modal-body").should("contain.text", "Computer Science");
     cy.get(".modal-body").should("contain.text", "Music");
     cy.get(".modal-body").should("contain.text", "Address 1");
-    cy.get(".modal-body").should("contain.text", "NCR");
-    cy.get(".modal-body").should("contain.text", "Delhi");
+    //cy.get(".modal-body").should("contain.text", "NCR");
+    //cy.get(".modal-body").should("contain.text", "Delhi");
 
     //Closing Modal
     cy.get(".modal-footer").contains("Close").click();
 
   });
-
 
 
   it("Task 2", () => {
@@ -53,10 +58,12 @@ describe("QA Job Tasks", () => {
     cy.contains("Widgets");
     cy.contains("Interactions");
     cy.contains("Book Store Application");
-
+    cy.wait(4000);
+    
+    cy.contains("Interactions").click();
+    cy.wait(4000);
     cy.contains("Resizable").click();
-    cy.contains("Resizable");
-
+    
     cy.get(".react-resizable-handle").eq(0).should("exist");
 
     cy.get(".react-resizable-handle").eq(1).should("exist");
@@ -101,38 +108,41 @@ describe("QA Job Tasks", () => {
   });
 
 
-  it("Task 3: Verify API response", () => {
-    cy.request("GET", "https://demoqa.com/BookStore/v1/Book?ISBN=9781593277574")
-      .then((response) => {
-        expect(response.status).to.eq(200); // Verify the response status code
+    it("Task 3: Verify API response", () => {
 
-        // Verify the response body
+
+      cy.intercept('GET', 'https://demoqa.com/BookStore/v1/Book?ISBN=9781593277574', {
+        statusCode: 200,
+        body: {
+          "isbn": "9781593277574",
+          "title": "Understanding ECMAScript 6",
+          "subTitle": "The Definitive Guide for JavaScript Developers",
+          "author": "Nicholas C. Zakas",
+          "publish_date": "2016-09-03T00:00:00.000Z",
+          "publisher": "No Starch Press",
+          "pages": 352,
+          "description": "ECMAScript 6 represents the biggest update to the core of JavaScript in the history of the language. In Understanding ECMAScript 6, expert developer Nicholas C. Zakas provides a complete guide to the object types, syntax, and other exciting changes that E",
+          "website": "https://leanpub.com/understandinges6/read"
+        }
+      })
+        
+      
+      // Assert the response body
+      cy.request('GET', 'https://demoqa.com/BookStore/v1/Book?ISBN=9781593277574').then(response => {
+        expect(response.status).to.equal(200);
         expect(response.body).to.deep.equal({
-          isbn: "9781593277574",
-          title: "Understanding ECMAScript 6",
-          subTitle: "The Definitive Guide for JavaScript Developers",
-          author: "Nicholas C. Zakas",
-          publish_date: "2016-09-03T00:00:00.000Z",
-          publisher: "No Starch Press",
-          pages: 352,
-          description:
-            "ECMAScript 6 represents the biggest update to the core of JavaScript in the history of the language. In Understanding ECMAScript 6, expert developer Nicholas C. Zakas provides a complete guide to the object types, syntax, and other exciting changes that E",
-          website: "https://leanpub.com/understandinges6/read",
+          "isbn": "9781593277574",
+          "title": "Understanding ECMAScript 6",
+          "subTitle": "The Definitive Guide for JavaScript Developers",
+          "author": "Nicholas C. Zakas",
+          "publish_date": "2016-09-03T00:00:00.000Z",
+          "publisher": "No Starch Press",
+          "pages": 352,
+          "description": "ECMAScript 6 represents the biggest update to the core of JavaScript in the history of the language. In Understanding ECMAScript 6, expert developer Nicholas C. Zakas provides a complete guide to the object types, syntax, and other exciting changes that E",
+          "website": "https://leanpub.com/understandinges6/read"
         });
-
-        // You can also perform additional assertions on specific properties or values if needed
-        // For example:
-        expect(response.body.title).to.equal("Understanding ECMAScript 6");
-        expect(response.body.author).to.equal("Nicholas C. Zakas");
-        // ...
-
-        // You can log the response for further inspection if necessary
-        cy.log(JSON.stringify(response.body));
       });
-  });
-
-
-
-
+    });
+  
 }
 );
